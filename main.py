@@ -11,7 +11,8 @@ class RunHany:
 		self.distance = distance
 		self.pace = pace
 		self.time_taken = time_taken
-
+		self.start_locations = ['mhata', 'zaytuna bay', 'location3']
+		self.end_locations = ['mhata', 'zaytuna bay', 'location3']
 	def get_time(self):
 		self.time = input("Enter your time: ")
 		if self.valid_number(self.time) and (int(self.time) <=60):
@@ -20,30 +21,58 @@ class RunHany:
 			print("Please enter a valid time: ")
 			return self.get_time()
 
-	def get_distance(self):
-		for i in range(10):
-			r= f'option_{i}'
-			print(r)
-		list_of_options = ['mhata', 
-		'zaytuna bay',
-		'location3',
-		]
-		option_1 = ['1:mhata']
-		option_2 = ['2:zaytuna bay']
-		options = {'from':option_1,'to':option_2}
-		choice = input("Choose from the three options.1. Choose what list. 2. Input your own list.3.Mix and match from lists + your own input.")
-		if choice=='1':
-			print('list_of_options')
-		elif choice=='2':
-			print('input your own list: so you will have a loop start+destination')
-			self.distance = input("Enter your distance")
-			if self.valid_number(self.distance):
-				return float(self.distance)
-			else:
-				print("Please enter a valid distance: ")
-				return self.get_distance()
-		elif choice=='3':
-			print('list_of_options + add yours')
+	def get_int_input(self,msg: str, valid_inputs: list[int]):
+		"""
+		It asks the user for an integer input, and only returns if it matches the
+		valid_inputs list
+		"""
+		while True:
+		    try:
+		        choice = int(input(msg))
+
+		        if choice in valid_inputs:
+		            return choice
+
+		        print("Error: the value has to be from the given choices")
+
+		    except ValueError:
+		        print("Error: the input has to be an integer")
+	def get_location(self):
+		"""
+		 asks the user for starting and ending points
+		 calculates distance 
+		"""
+		# the problem is that I need to convert locations to actual distance
+		# from mhata to zaytuna bay ~= 7km
+		# from zaytuna bay to mhata ~= 7km
+
+		print("1.Choose from list")
+		print("2.Input your own")
+		print("3.Mix and match from lists + your own input")
+
+		choice = self.get_int_input("choose from the list above: ", list(range(1,4)))
+
+		if choice == 1: # choosing from the list
+			print("you chose number {choice}")
+
+			for i, loc in enumerate(self.start_locations):
+				print(f'{i}: {loc}')
+
+			valid_inputs = list(range(len(self.start_locations)))
+
+			start= self.get_int_input("choose starting point", valid_inputs)
+			end = self.get_int_input("choose end point", valid_inputs)
+			distance = self.get_distance()
+			print(f'the run is from {self.start_locations[start]} to {self.start_locations[end]} and that covered {distance}km')
+
+		elif choice == 2: 
+			print("you chose number {choice}")
+			# Input your own
+			# TODO
+		elif choice == 3:
+			print("you chose number {choice}")
+		# mix and match
+		# TODO
 		
 		# maybe create another function to validate distance.
 		# self.distance = input("Enter your distance")
@@ -52,13 +81,23 @@ class RunHany:
 		# else:
 		# 	print("Please enter a valid distance: ")
 		# 	return self.get_distance()
+	def get_distance(self):
+		# TODO
+		# if location chosen from one area to another get it's distance
+		# also input distance
+		self.distance = int(input("Enter the distance covered: "))
+		if self.valid_number(self.distance):
+			return float(self.distance)
+		else:
+			return self.get_distance()
+
+
 	def get_time_taken(self):
 		self.time_taken = input("Enter the current time am/pm: ")
 		# fix this conditional statement
 		if self.valid_number(self.time_taken):
 			return float(self.time_taken)
 		else:
-			print("Please enter a valid time_taken: ")
 			return self.get_time_taken()
 
 	def pace_calculation(self):
@@ -100,7 +139,7 @@ class RunHany:
 			# add a list of options
 			# that is a list of distances you would have
 			filewriter.writerow(['Time/min', 'Distance/miles','Time_Taken','Pace'])
-			filewriter.writerows(row_contents)
+			filewriter.writerows([row_contents])
 			# else:
 			# 	print("autofill")
 				# # get rows
@@ -123,28 +162,24 @@ class RunHany:
 			ans = input("Choose to continue adding or stop:(c for continue)")
 			if ans == 'c':
 				time = self.get_time()
-				distance = self.get_distance()
+				distance = self.get_location()
 				time_taken= self.get_time_taken()
 				total_time = time
-				total_distance = distance
+				total_distance = self.distance
 				pace = total_time/total_distance
 				# what is another approach to do this ? use a dictionary ?
 				str_x = str(int(time))
-				str_y = str(int(distance))
+				str_y = str(int(total_distance))
 				str_z = str(int(time_taken))
 				str_pace = str(int(pace))
-				x_y_list.append([str_x, str_y, str_z, pace])
-				# x_y_list.append(str_x)
-				# x_y_list.append(str_y)
-				# x_y_list.append(str_z)
-				# x_y_list.append(pace)
-				print(x_y_list)
+				row_contents.extend([str_x, str_y, str_z, pace])
+				print(row_contents)
+				# TODO: make this universal (add more "guards")
 				# if I want to add more columns I need to change the value for i + range
-				row_contents=[x_y_list[i:i+4] for i in range(0,len(x_y_list),4)]
+				# row_contents=[x_y_list[i:i+4] for i in range(0,len(x_y_list),4)]
 			else:
 				print("autofill")
 				break
-
 
 		return row_contents
 
@@ -188,7 +223,6 @@ class RunHany:
 			number = int(str_number)
 		except:
 			return False
-
 		return number
 	def main(self):
 		ans = input("Choose to write or append to a csv file:(w/a) ")
