@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from datetime import datetime
 import csv
-from matplotlib import pyplot as plt
-# import numpy as np
-# import math
+#from matplotlib import pyplot as plt
+#from pygeocoder import Geocoder
+#import numpy as np
+#import math
 
-class RunHany:
+class Run:
 	def __init__(self, time, distance, pace,time_taken, max):
 		self.time= time
 		self.distance = distance
@@ -37,10 +38,15 @@ class RunHany:
 
 		    except ValueError:
 		        print("Error: the input has to be an integer")
+
+
 	def get_location(self):
 		"""
 		 asks the user for starting and ending points
-		 calculates distance 
+		 calculates distance
+		 #TODO 
+		 Yet in this scenario we have locations stored in a database and need to add latitude and longitude to them. We’ll use a python script to interact with the database. 
+		 Then it will communicate with the geocoding api to populate those coordinate fields.
 		"""
 		# the problem is that I need to convert locations to actual distance
 		# from mhata to zaytuna bay ~= 7km
@@ -50,10 +56,12 @@ class RunHany:
 		print("2.Input your own")
 		print("3.Mix and match from lists + your own input")
 
+		l = []
+
 		choice = self.get_int_input("choose from the list above: ", list(range(1,4)))
 
 		if choice == 1: # choosing from the list
-			print("you chose number {choice}")
+			print(f"you chose number {choice}")
 
 			for i, loc in enumerate(self.start_locations):
 				print(f'{i}: {loc}')
@@ -62,19 +70,24 @@ class RunHany:
 
 			start= self.get_int_input("choose starting point", valid_inputs)
 			end = self.get_int_input("choose end point", valid_inputs)
+			# TODO: add google distance calculator based on location
+			# business_name = 'Zaytuna Bay'
+			# print(f'Searching {business_name}')
+			# results = Geocoder.geocode(business_name)
+			# for result in results:
+			#     print (result)
 			distance = self.get_distance()
 			print(f'the run is from {self.start_locations[start]} to {self.start_locations[end]} and that covered {distance}km')
 
 		elif choice == 2: 
-			print("you chose number {choice}")
-			# Input your own
-			# TODO
-		elif choice == 3:
-			print("you chose number {choice}")
-		# mix and match
-		# TODO
-		
-		# maybe create another function to validate distance.
+			print(f"you chose number {choice}")
+			start = input("Enter starting location: ")
+			end = input("Enter ending location: ")
+			l.extend([start,end])
+			print(l)
+
+		# TODO:
+		# create another function to validate distance.
 		# self.distance = input("Enter your distance")
 		# if self.valid_number(self.distance):
 		# 	return float(self.distance)
@@ -90,10 +103,8 @@ class RunHany:
 			return float(self.distance)
 		else:
 			return self.get_distance()
-
-
 	def get_time_taken(self):
-		self.time_taken = input("Enter the current time am/pm: ")
+		self.time_taken = input("Enter what time you ran am/pm: ")
 		# fix this conditional statement
 		if self.valid_number(self.time_taken):
 			return float(self.time_taken)
@@ -130,16 +141,42 @@ class RunHany:
 		# get file_name
 		filename = self.file_name()
 		# get rows
-		row_contents = self.get_rows()
+		# while True:
+		# TODO add a way to create new row content based on user permission
+		while True:
+			l =[]
+			ans = input("Write a new row ?(y/n) ")
+			if ans=='y':
+				# TODO entering a new field means you need to enter a new row which usually means
+				# entering a new variable to get_rows
+				new_field = self.get_fields()
+				row_contents= self.get_rows()
+				with open(filename+'.csv', 'a', newline='') as csvfile:
+					filewriter = csv.writer(csvfile)
+					filewriter.writerow(['Time/min', 'Distance/miles','Time_Taken','Pace',new_field])
+					filewriter.writerows([row_contents])
+			elif ans =='n':
+				break
+			# return new row_content after every succesful loop
+		
+		# for i in range(5):
+		# 	row_contents_[i] = self.get_rows()
+		# How to add a field
+
+
 		# write to csv
-		with open(filename+'.csv', 'w', newline='') as csvfile:
-			filewriter = csv.writer(csvfile)
+		# with open(filename+'.csv', 'w', newline='') as csvfile:
+		# 	filewriter = csv.writer(csvfile)
+		# 	filewriter.writerow(['Time/min', 'Distance/miles','Time_Taken','Pace'])
+		# 	# row_contents= self.get_rows()
+		# 	# filewriter.writerows([row_contents])
+		# 	filewriter.writerows([row_contents_1, row_contents_2])
+
+			# TODO:
 			# add a field for future notes
 			# also add a list of the common distances to choose from
 			# add a list of options
 			# that is a list of distances you would have
-			filewriter.writerow(['Time/min', 'Distance/miles','Time_Taken','Pace'])
-			filewriter.writerows([row_contents])
 			# else:
 			# 	print("autofill")
 				# # get rows
@@ -154,32 +191,42 @@ class RunHany:
 				# 	filewriter.writerow(['Time/min', 'Distance/miles','Time_Taken','Pace'])
 				# 	filewriter.writerows(row_contents)
 
+	def get_fields(self):
+		while True:
+			ans = input("Add a new field ?(y/n) ")
+			if ans == 'y':
+				new_field = input("Add field: ")
+				return new_field
+			else:
+				break
+				# or pass
 	def get_rows(self):
+		# TODO: start fixing here.
 		numbering = ['first','second', 'third', 'fourth', 'fifth']
 		row_contents = []
 		x_y_list = []
-		while len(row_contents) < len(numbering):
-			ans = input("Choose to continue adding or stop:(c for continue)")
-			if ans == 'c':
-				time = self.get_time()
-				distance = self.get_location()
-				time_taken= self.get_time_taken()
-				total_time = time
-				total_distance = self.distance
-				pace = total_time/total_distance
-				# what is another approach to do this ? use a dictionary ?
-				str_x = str(int(time))
-				str_y = str(int(total_distance))
-				str_z = str(int(time_taken))
-				str_pace = str(int(pace))
-				row_contents.extend([str_x, str_y, str_z, pace])
-				print(row_contents)
+		# while len(row_contents) < len(numbering):
+			# ans = input("Choose to continue adding or stop:(c for continue)")
+			# if ans == 'c':
+		time = self.get_time()
+		distance = self.get_location()
+		time_taken= self.get_time_taken()
+		total_time = time
+		total_distance = self.distance
+		pace = total_time/total_distance
+		# what is another approach to do this ? use a dictionary ?
+		str_x = str(int(time))
+		str_y = str(int(total_distance))
+		str_z = str(int(time_taken))
+		str_pace = str(int(pace))
+		row_contents.extend([str_x, str_y, str_z, pace])
+		print(row_contents)
 				# TODO: make this universal (add more "guards")
 				# if I want to add more columns I need to change the value for i + range
 				# row_contents=[x_y_list[i:i+4] for i in range(0,len(x_y_list),4)]
-			else:
-				print("autofill")
-				break
+			# else:
+			# 	print("autofill")
+			# 	break
 
 		return row_contents
 
@@ -236,5 +283,5 @@ class RunHany:
 
 
 
-start = RunHany(17, 5, 2, 13,500)
+start = Run(17, 5, 2, 13,500)
 start.main()
