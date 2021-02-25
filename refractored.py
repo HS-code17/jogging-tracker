@@ -14,7 +14,7 @@ class Run:
 		self.coordinates = ["""33°54'11.0"N 35°29'56.5"E""" ]
 
 	def get_time(self):
-		self.time = input("Enter the time it took for the run: ")
+		self.time = input("Enter the time it took to finish the run: ")
 		if self.valid_number(self.time) and (int(self.time) <=60):
 			return float(self.time)
 		else:
@@ -35,10 +35,9 @@ class Run:
 			starting = self.locations[start]
 			ending = self.locations[end]
 			print(f'the run is from {starting} to {ending}')
-
-			distances_covered = self.find_distance(starting,ending)
+			distances_covered= self.find_distance(starting,ending)
 			print(f'The covered distance was: {distances_covered} km')
-			return start,end,distances_covered
+			return starting,ending,distances_covered
 		if choice == 2: # entereing your own locations
 			print(f"you chose number {choice}")
 			# TODO: append list_locations based on what users enters and keep it this way
@@ -71,10 +70,7 @@ class Run:
 			# return current_time
 
 	def find_distance(self,start,end):
-		a= 	(str(start)+'_to_'+str(end))
-		reverse_a = (str(end)+'_to_'+str(start))
-		# TODO: need to reverse its lookup
-		# 'hello world'[::-1]
+		# TODO: JSON file for new locations
 		distances_covered = {
 
 				"Central-Military-Club_to_Zaituna-Bay":3.1,
@@ -82,27 +78,41 @@ class Run:
 				"c_to_d":10
 
 		}
+		# look up the distance in the dict
 		# Python dictionary method get() returns a value for the given key. If key is not available then returns default value None.
-		return distances_covered.get(a)
-		# check reverse
-		# imagine if you have a 100 of years
+		my_distance = distances_covered.get(start + '_to_' + end)
+		if my_distance is None:
+		# that means it didn't find the distance in the dict
+		# so we try to find the reverse
+			my_distance = distances_covered.get(end + '_to_' + start)
+
+		if my_distance:
+		# if we found the reverse distance or the distance
+			print(f"found distance : {start} -> {end} = {my_distance} km")
+			return my_distance
+		else:
+		# if the distance is still none ..
+		# that means the distance is not stored at all
+			print("Error: couldn't find a stored distance!")
+			return self.get_distance()
+
+		# imagine if you have a 100 of distances
 		# find a way to use the dictionary
 	def get_rows(self):
 		row_contents = []
 		# this returns an int or a float
 		time_covered = self.get_time()
 		# this returns a string
-		locations = self.get_location()
-		# this returns a int/ float
-		distances_covered = self.get_distance()
+		start,end,distances_covered = self.get_location()
+		locations = start+ '->' + end
 		# this returns a int/ float
 		time_taken= self.jog_time()
 		# first approach 
-		row_contents.extend([time_covered, locations, distances_covered, time_covered/distances_covered, time_taken])
+		row_contents.extend([time_covered, distances_covered,locations,time_taken, time_covered/distances_covered])
 		return row_contents
 	def get_fields(self):
 		# TODO: add more "guards"
-		fields_content = input("Add a new field: ")
+		fields_content = input("Add a new field or leave empty: ")
 		return fields_content
 
 	def file_name(self):
@@ -126,7 +136,7 @@ class Run:
 				row_contents= self.get_rows()
 				with open(filename+'.csv', 'a', newline='') as csvfile:
 					filewriter = csv.writer(csvfile)
-					filewriter.writerow(['Time/min', 'Distance/miles','Time_Taken','Pace',new_field])
+					filewriter.writerow(['Time/min', 'Distance/km','Locations','Time_Taken','Pace',new_field])
 					filewriter.writerows([row_contents])
 			elif ans =='n':
 				break
