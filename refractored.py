@@ -115,12 +115,16 @@ class Run:
 		# this returns a string
 		# start,end,distances_covered = self.get_location()
 		locations = self.get_location()
-		distances_covered = locations.distances
+		distances_covered = float(locations.distances)
 		location_points = locations.start + '-->'+ locations.end 
 		# Point = namedtuple('Point', [start, end])
 		# locations = start+ '->' + end
 		# this returns a int/ float
 		time_taken= self.jog_time()
+		# pace
+		print(distances_covered)
+		print(location_points)
+		pace = time_covered/distances_covered
 		# first approach 
 		row_contents.extend([time_covered, distances_covered,location_points,time_taken, time_covered/distances_covered])
 		return row_contents
