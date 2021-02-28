@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 from datetime import datetime
 import csv
+import json
+from pprint import pprint
+from collections import namedtuple
 
 
 class Run:
@@ -9,9 +12,11 @@ class Run:
 		self.distance = distance
 		self.pace = pace
 		self.time_taken = time_taken
-		self.locations = ['Central-Military-Club','Zaituna-Bay','Meito Cafe & Lounge']
-		self.links = ['https://goo.gl/maps/2kjp9TVDrMhz3LD7A']
-		self.coordinates = ["""33°54'11.0"N 35°29'56.5"E""" ]
+		# self.locations = ['Central-Military-Club','Zaituna-Bay','Meito Cafe & Lounge']
+		# self.links = ['https://goo.gl/maps/2kjp9TVDrMhz3LD7A']
+		# self.coordinates = ["""33°54'11.0"N 35°29'56.5"E""" ]
+		with open('locations.json') as f:
+			self.d = json.load(f)
 
 	def get_time(self):
 		self.time = input("Enter the time it took to finish the run: ")
@@ -27,17 +32,24 @@ class Run:
 		list_locations = []
 		if choice == 1: # choosing from the list
 			print(f"you chose number {choice}")
-			for i, loc in enumerate(self.locations):
-				print(f'{i}: {loc}')
-			valid_inputs = list(range(len(self.locations)))
+			for i, loc in enumerate(self.d['locations']):
+				pprint(f'{i}: {loc}')
+
+			locations = self.d['locations']
+			valid_inputs = list(range(len(locations)))
 			start= self.get_int_input("choose starting location: ", valid_inputs)
 			end = self.get_int_input("choose ending location: ", valid_inputs)
-			starting = self.locations[start]
-			ending = self.locations[end]
+			starting = locations[start]
+			ending = locations[end]
 			print(f'the run is from {starting} to {ending}')
 			distances_covered= self.find_distance(starting,ending)
 			print(f'The covered distance was: {distances_covered} km')
-			return starting,ending,distances_covered
+			
+			# TODO: use namedtuple
+			Locations = namedtuple('Locations','start end distances')
+			l = Locations(starting,ending,distances_covered)
+			# return starting,ending,distances_covered
+			return l
 		if choice == 2: # entereing your own locations
 			print(f"you chose number {choice}")
 			# TODO: append list_locations based on what users enters and keep it this way
@@ -71,20 +83,18 @@ class Run:
 
 	def find_distance(self,start,end):
 		# TODO: JSON file for new locations
-		distances_covered = {
 
-				"Central-Military-Club_to_Zaituna-Bay":3.1,
-				"b_to_c":6,
-				"c_to_d":10
-
-		}
-		# look up the distance in the dict
+		# I need to fix this 
+		print("Distances:",self.d['distances'])
+		data = self.d['distances']
+		print(type(data))
 		# Python dictionary method get() returns a value for the given key. If key is not available then returns default value None.
-		my_distance = distances_covered.get(start + '_to_' + end)
+		my_distance = data.get(start + '_to_' + end)
+		print(my_distance)
 		if my_distance is None:
 		# that means it didn't find the distance in the dict
 		# so we try to find the reverse
-			my_distance = distances_covered.get(end + '_to_' + start)
+			my_distance = data.get(end + '_to_' + start)
 
 		if my_distance:
 		# if we found the reverse distance or the distance
@@ -103,12 +113,16 @@ class Run:
 		# this returns an int or a float
 		time_covered = self.get_time()
 		# this returns a string
-		start,end,distances_covered = self.get_location()
-		locations = start+ '->' + end
+		# start,end,distances_covered = self.get_location()
+		locations = self.get_location()
+		distances_covered = locations.distances
+		location_points = locations.start + '-->'+ locations.end 
+		# Point = namedtuple('Point', [start, end])
+		# locations = start+ '->' + end
 		# this returns a int/ float
 		time_taken= self.jog_time()
 		# first approach 
-		row_contents.extend([time_covered, distances_covered,locations,time_taken, time_covered/distances_covered])
+		row_contents.extend([time_covered, distances_covered,location_points,time_taken, time_covered/distances_covered])
 		return row_contents
 	def get_fields(self):
 		# TODO: add more "guards"
