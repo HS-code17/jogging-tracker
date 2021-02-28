@@ -1,0 +1,39 @@
+{
+    "locations": 
+    [
+        "Central Military Club",
+        "Fitness Zone - Manara",
+        "Mobil - Gas Station",
+        "AUB Sea Gate",
+        "AUB OSB (Business) Gate",
+        "Starbucks",
+        "Uncle Deek",
+        "Corniche Ain Mreisse",
+        "Meito Cafe & Lounge",
+        "Le Pecheur",
+        "Saint Georges Hotel & Resort",
+        "Beginning-Zaituna-Bay"
+    ],
+    "distances":
+        {
+            "Central Military Club_to_Beginning-Zaituna-Bay":"3.1",
+            "b_to_c":"6"
+        },
+        
+    "coordinates":[
+        "33.89736260981743, 35.47042333149969",
+        "33.90034248938036, 35.4722693939067",
+        "33.90153089019158, 35.475220588770824",
+        "33.90227859609155, 35.479013089302676",
+        "33.90257174982158, 35.48213569368031",
+        "33.90203454545557, 35.48406557587927",
+        "33.90132934361508, 35.48754002299976",
+        "33.901362278299366, 35.48758962347364",
+        "33.901534452522924, 35.48995364235837",
+        "33.90173208285328, 35.49098342365115",
+        "33.902605056553845, 35.49229570876414",
+        "33.90239530555119, 35.49475694836214",
+        "33.90134473408881, 35.49656779608637"
+    ],
+    "links":["https://goo.gl/maps/AWvSwZv7d8TyeWmd7"]
+}
