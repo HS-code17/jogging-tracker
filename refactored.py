@@ -19,7 +19,7 @@ class Run:
 			self.d = json.load(f)
 
 	def get_time(self):
-		self.time = input("\nEnter the time it took to finish the run: ")
+		self.time = input("\nEnter the time in minutes that it took to finish the run: ")
 		if self.valid_number(self.time) and (int(self.time) <=60):
 			return float(self.time)
 		else:
@@ -75,7 +75,7 @@ class Run:
 		"""
 		The time at which this jog was made.
 		"""
-		ans = input("Enter your own time(1) or take current time(2)? ")
+		ans = input("Enter your own time(1) or take current time(enter any value or leave empty)? ")
 		if ans == '1':
 			print("\n---------------------------------")
 			self.time_taken = input("Enter what time you ran am/pm: ")
@@ -84,7 +84,7 @@ class Run:
 				return float(self.time_taken)
 			else:
 				return self.jog_time()
-		elif ans == '2':
+		else:
 			Time = datetime.now()
 			Current_Time_min = Time.strftime("%M")
 			Current_Time_hr = Time.strftime("%H")
@@ -113,11 +113,15 @@ class Run:
 		# that means the distance is not stored at all
 			print("\n---------------------------------")
 			print("\nError: couldn't find a stored distance!")
-			ans = int(input("Manually enter distance(1) or choose another location(2): "))
-			if ans == 1:			
+			ans = input("Manually enter distance(1) or choose another location: ")
+			if ans == "1":			
 				return self.get_distance()
-			elif ans== 2:
+			else:
+				print("\n---------------------------------")
+				print("\nChoose another location: ")
+				print("\n---------------------------------")
 				return self.get_location()
+
 
 	def get_rows(self):
 		row_contents = []
@@ -139,12 +143,6 @@ class Run:
 		return fields_content
 
 	def file_name(self):
-		# Time = datetime.now()
-		# Current_Time_min = Time.strftime("%M")
-		# Current_Time_hr = Time.strftime("%H")
-		# time_to_run = int(Current_Time_min) + 20
-		# filename_time = Current_Time_hr + ":" + str(time_to_run)
-
 		Cu_DateTime = datetime.now()
 		Date = Cu_DateTime.strftime("%Y-%m-%d")
 
